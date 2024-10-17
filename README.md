@@ -72,16 +72,6 @@ The API will be accessible at `http://127.0.0.1:5000/`.
 ### 7. Stop the Application
 To stop the Flask server, you can press `Ctrl + C` in the terminal where the server is running.
 
-## Troubleshooting
-- Make sure all required packages are installed.
-- Ensure that your Google Cloud credentials are set up correctly.
-- If you encounter any errors, check the console for error messages.
-
-## Contributing
-Feel free to contribute to the project by creating a branch and submitting a pull request with your changes.
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ```
 
