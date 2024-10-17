@@ -1,0 +1,18 @@
+# Node.js dependencies
+**/node_modules
+**/package-lock.json
+
+# Logs
+**/logs
+**/*.log
+
+# Build directories
+**/build
+**/dist
+
+# Environment variables
+**/.env
+
+# OS files
+.DS_Store
+Thumbs.db
