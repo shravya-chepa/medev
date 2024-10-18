@@ -11,9 +11,6 @@ load_dotenv()
 # Set up Flask app
 app = Flask(__name__)
 
-# Access Google Cloud credentials
-google_api_credentials = os.getenv('GOOGLEAPI_CREDENTIALS_PATH')
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = google_api_credentials
 
 # Register blueprints
 app.register_blueprint(user_bp, url_prefix='/user')
