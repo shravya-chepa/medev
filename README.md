@@ -84,3 +84,14 @@ The API will be accessible at `http://127.0.0.1:5000/`.
 
 ### 8. Stop the Application
 To stop the Flask server, you can press `Ctrl + C` in the terminal where the server is running.
+
+
+## 4. Start MongoDB Manually (If Needed)
+If you don’t want MongoDB running as a background service, you can start it manually with:
+
+mongod --config /opt/homebrew/etc/mongod.conf
+## 5. Stop MongoDB (Optional)
+If you ever need to stop MongoDB, you can use:
+
+brew services stop mongodb/brew/mongodb-community
+
