@@ -3,10 +3,13 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <h2>Welcome to the Home Page</h2>
-    <p>Choose a page to visit:</p>
-    <ul>
-        <li><a href="/user/dashboard">User Dashboard</a></li>
-        <li><a href="/admin/dashboard">Admin Dashboard</a></li>
-    </ul>
+    <div class="home">
+        <img src="{{ url_for('static', filename='images/feedback_illustration.jpg') }}" alt="My Image" class="home-illustration">
+        <p>Choose a page to visit:</p>
+        <div class="dashboard-btns">
+            <a href="/user/dashboard">User Dashboard</a>
+            <a href="/admin/dashboard">Admin Dashboard</a>
+        </div>
+        </div>
+    
 {% endblock %}

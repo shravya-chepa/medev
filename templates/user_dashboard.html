@@ -5,4 +5,62 @@
 {% block content %}
     <h2>User Dashboard</h2>
     <p>Welcome to the user dashboard!</p>
+
+    <!-- Record and Stop Buttons -->
+    <button id="recordButton">Start Recording</button>
+    <button id="stopButton" disabled>Stop Recording</button>
+
+    <!-- Audio Player -->
+    <h3>Recorded Audio:</h3>
+    <audio id="audioPlayer" controls></audio>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];  // Array to store recorded audio chunks
+
+        // Get buttons and audio element from the DOM
+        const recordButton = document.getElementById('recordButton');
+        const stopButton = document.getElementById('stopButton');
+        const audioPlayer = document.getElementById('audioPlayer');
+
+        // Start Recording
+        recordButton.addEventListener('click', async () => {
+            // Disable the record button and enable the stop button
+            recordButton.disabled = true;
+            stopButton.disabled = false;
+
+            // Get the user's microphone audio stream
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+
+            // Push each recorded audio chunk into the array
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            // Start recording
+            mediaRecorder.start();
+        });
+
+        // Stop Recording
+        stopButton.addEventListener('click', () => {
+            // Stop the media recorder and enable the record button
+            mediaRecorder.stop();
+            recordButton.disabled = false;
+            stopButton.disabled = true;
+
+            // Once the recording is stopped, create a playable audio URL
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+
+                // Set the audio source to the created Blob URL and play it
+                audioPlayer.src = audioUrl;
+                audioPlayer.play();
+
+                // Clear the audioChunks array for the next recording
+                audioChunks = [];
+            };
+        });
+    </script>
 {% endblock %}
