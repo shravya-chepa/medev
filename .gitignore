@@ -20,3 +20,5 @@
 Thumbs.db
 
 **/googleapi-bdahackathon.json
+
+**/__pycache__
