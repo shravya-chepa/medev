@@ -3,7 +3,7 @@ from sklearn.naive_bayes import MultinomialNB
 
 # Load the actual review texts from text_test.txt
 import numpy as np
-
+import os
 # Define possible categories
 categories = [
     'Emergency Room Care', 'Surgical Experience', 'Doctor Consultation', 'Nurse Communication', 
@@ -66,7 +66,7 @@ def load_train_labels(train_texts):
     return [assign_categories(review) for review in train_texts]
 
 # File path to your text_test.txt
-file_path = '/Users/saitejasriyerramsetti/Desktop/hack_duplicate/medev/ml/text_test.txt'
+file_path = os.getenv('TRAIN_DATA_PATH')
 
 # Load the training data (51 reviews)
 train_texts = load_train_texts(file_path)
