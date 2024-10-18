@@ -13,6 +13,10 @@
 # Environment variables
 **/.env
 
+**/env
+
 # OS files
 .DS_Store
 Thumbs.db
+
+bda-hackathon-4f6d07b9c680.json
