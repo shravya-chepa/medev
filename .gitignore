@@ -13,6 +13,7 @@
 # Environment variables
 **/.env
 
+**/venv
 **/env
 
 # OS files

@@ -1,11 +1,8 @@
-import sys
-sys.path.append('..')  # Adds the parent directory to the system path
-
 from flask import request, jsonify
-from ml.summarization import summarize_text
-from ml.sentiment_analysis import analyze_sentiment
-from ml.categorization import categorize_text
-from ml.keyword_extraction import extract_keywords
+from summarization import summarize_text
+from sentiment_analysis import analyze_sentiment
+from categorization import categorize_text
+from keyword_extraction import extract_keywords
 
 def process_feedback():
     data = request.json
@@ -25,17 +22,13 @@ def process_feedback():
 
     # Keyword Extraction
     keywords = extract_keywords(text)
-    print(keywords,summary,sentiment, category)
 
-    json_res = jsonify({
+    return jsonify({
         'summary': summary,
         'sentiment': sentiment,
         'category': category,
         'keywords': keywords
     })
-
-    print("this is json res: ", json_res)
-    return json_res
 
 # Load text from text_test.txt
 def process_reviews_from_file(file_path):
