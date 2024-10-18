@@ -25,6 +25,7 @@ nav a {
     color: #ffffff;
 }
 
+
 .nav-items {
     display: flex;
     gap: 20px;
@@ -166,8 +167,16 @@ nav a {
     padding: 15px;
     font-size: 18px;
     margin-top: 10px;
+    border: 1px solid #ddd
 }
 
+.feedback-success-text {
+    color: #55AD9B;
+}
+
+.feedback-failure-text {
+    color: #D04848;
+}
 
 
 footer {

@@ -3,241 +3,258 @@
 {% block title %}User Dashboard{% endblock %}
 
 {% block content %}
-    <h2>User Dashboard</h2>
+<h2>User Dashboard</h2>
 
-    <div class="recording-controls">
-        <div class="screens">
-            <button id="recordScreenBtn" class="screens-btns active-screen-btn">Record</button>
-            <button id="typeScreenBtn" class="screens-btns">Type</button>
-        </div>
+<div class="recording-controls">
+    <div class="screens">
+        <button id="recordScreenBtn" class="screens-btns active-screen-btn">Record</button>
+        <button id="typeScreenBtn" class="screens-btns">Type</button>
+    </div>
 
-        <!-- Record screen content -->
-        <div class="record-screen-content">
-            <button id="recordRecordButton" class="record-btn"><i class="fa fa-microphone" style="font-size:36px;color:#55AD9B;"></i></button>
-            <button id="stopRecordButton" style="display: none;" class="stop-btn"><i class="fa fa-stop-circle" aria-hidden="true" style="font-size:36px;color:#D04848;"></i></button>
-            
-            <div class="transcription-container">
-                <textarea id="transcriptionRecordText" rows="10" class="transcription-text" 
-                        placeholder="Transcription will appear here..." ></textarea>
-                <button id="submitRecordFeedback" class="submit-feedback-btn" disabled>Submit Feedback</button>
-            </div>
-        </div>
+    <!-- Record screen content -->
+    <div class="record-screen-content">
+        <button id="recordRecordButton" class="record-btn"><i class="fa fa-microphone" style="font-size:36px;color:#55AD9B;"></i></button>
+        <button id="stopRecordButton" style="display: none;" class="stop-btn"><i class="fa fa-stop-circle" aria-hidden="true" style="font-size:36px;color:#D04848;"></i></button>
 
-        <!-- Type screen content (initially hidden) -->
-        <div class="type-screen-content" style="display: none;">
-            <textarea id="transcriptionTypeText" rows="10" class="transcription-text" 
-                      placeholder="Type your feedback here..."></textarea>
-            <button id="submitTypeFeedback" class="submit-feedback-btn">Submit Feedback</button>
+        <div class="transcription-container">
+            <textarea id="transcriptionRecordText" rows="10" class="transcription-text" placeholder="Transcription will appear here..."></textarea>
+            <button id="submitRecordFeedback" class="submit-feedback-btn" disabled>Submit Feedback</button>
         </div>
     </div>
 
-    <script>
-        const recordScreenBtn = document.getElementById('recordScreenBtn');
-        const typeScreenBtn = document.getElementById('typeScreenBtn');
-        const recordScreenContent = document.querySelector('.record-screen-content');
-        const typeScreenContent = document.querySelector('.type-screen-content');
+    <!-- Type screen content (initially hidden) -->
+    <div class="type-screen-content" style="display: none;">
+        <textarea id="transcriptionTypeText" rows="10" class="transcription-text" placeholder="Type your feedback here..."></textarea>
+        <button id="submitTypeFeedback" class="submit-feedback-btn">Submit Feedback</button>
+    </div>
+</div>
 
-        // Toggle between record and type screens
-        recordScreenBtn.addEventListener('click', () => {
-            recordScreenContent.style.display = 'flex';
-            typeScreenContent.style.display = 'none';
-            recordScreenBtn.classList.add("active-screen-btn")
-            typeScreenBtn.classList.remove("active-screen-btn")
-        });
+<!-- Loader -->
+<div id="loader" style="display:none; text-align: center; margin-top: 10px;">
+    <i class="fa fa-spinner fa-spin" style="font-size:24px; padding: 5px;margin-right:5px"></i> Processing feedback...
+</div>
 
-        typeScreenBtn.addEventListener('click', () => {
-            recordScreenContent.style.display = 'none';
-            typeScreenContent.style.display = 'flex';
-            typeScreenBtn.classList.add("active-screen-btn")
-            recordScreenBtn.classList.remove("active-screen-btn")
-            
-        });
+<!-- Feedback message paragraph -->
+<p id="feedbackMessage" style="text-align:center; margin-top: 15px;"></p>
 
-        // Get elements specific to the recording screen
-        const recordButton = document.getElementById('recordRecordButton');
-        const stopButton = document.getElementById('stopRecordButton');
-        const transcriptionText = document.getElementById('transcriptionRecordText');
-        const submitFeedback = document.getElementById('submitRecordFeedback');
+<script>
+    const recordScreenBtn = document.getElementById('recordScreenBtn');
+    const typeScreenBtn = document.getElementById('typeScreenBtn');
+    const recordScreenContent = document.querySelector('.record-screen-content');
+    const typeScreenContent = document.querySelector('.type-screen-content');
 
-        // Get the Speech Recognition API with fallback
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let recognition = null;
-        let isRecording = false;
-        let mediaStream = null;  // To track media stream for stopping
+    const loader = document.getElementById('loader');
+    const feedbackMessage = document.getElementById('feedbackMessage');
 
-        // Initialize speech recognition if available
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.lang = 'en-US';
+    // Toggle between record and type screens
+    recordScreenBtn.addEventListener('click', () => {
+        recordScreenContent.style.display = 'flex';
+        typeScreenContent.style.display = 'none';
+        recordScreenBtn.classList.add("active-screen-btn")
+        typeScreenBtn.classList.remove("active-screen-btn")
+    });
 
-            // Handle recognition start
-            recognition.onstart = () => {
-                console.log('Speech recognition started');
-                isRecording = true;
-                updateUI(true);
-            };
+    typeScreenBtn.addEventListener('click', () => {
+        recordScreenContent.style.display = 'none';
+        typeScreenContent.style.display = 'flex';
+        typeScreenBtn.classList.add("active-screen-btn")
+        recordScreenBtn.classList.remove("active-screen-btn")
 
-            // Handle recognition results
-            recognition.onresult = (event) => {
-                let interimTranscript = '';
-                let finalTranscript = '';
+    });
 
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    const transcript = event.results[i][0].transcript;
-                    if (event.results[i].isFinal) {
-                        finalTranscript += transcript + ' ';
-                    } else {
-                        interimTranscript += transcript;
-                    }
+    // Get elements specific to the recording screen
+    const recordButton = document.getElementById('recordRecordButton');
+    const stopButton = document.getElementById('stopRecordButton');
+    const transcriptionText = document.getElementById('transcriptionRecordText');
+    const submitFeedback = document.getElementById('submitRecordFeedback');
+
+    // Get the Speech Recognition API with fallback
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isRecording = false;
+    let mediaStream = null;  // To track media stream for stopping
+
+    // Initialize speech recognition if available
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        // Handle recognition start
+        recognition.onstart = () => {
+            console.log('Speech recognition started');
+            isRecording = true;
+            updateUI(true);
+        };
+
+        // Handle recognition results
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            let finalTranscript = '';
+
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    interimTranscript += transcript;
                 }
+            }
 
-                // Update the textarea
-                if (finalTranscript) {
-                    transcriptionText.value += finalTranscript;
-                    transcriptionText.scrollTop = transcriptionText.scrollHeight;
-                }
-            };
+            // Update the textarea
+            if (finalTranscript) {
+                transcriptionText.value += finalTranscript;
+                transcriptionText.scrollTop = transcriptionText.scrollHeight;
+            }
+        };
 
-            // Handle recognition errors
-            recognition.onerror = (event) => {
-                console.error('Speech recognition error:', event.error);
-                if (event.error === 'not-allowed') {
-                    alert('Microphone access denied. Please allow microphone access and try again.');
-                }
-                stopRecording();
-            };
+        // Handle recognition errors
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            if (event.error === 'not-allowed') {
+                alert('Microphone access denied. Please allow microphone access and try again.');
+            }
+            stopRecording();
+        };
 
-            // Handle recognition end
-            recognition.onend = () => {
-                console.log('Speech recognition ended');
-                if (isRecording) {
-                    // Restart recognition if we're still recording
-                    recognition.start();
-                }
-            };
+        // Handle recognition end
+        recognition.onend = () => {
+            console.log('Speech recognition ended');
+            if (isRecording) {
+                // Restart recognition if we're still recording
+                recognition.start();
+            }
+        };
+    } else {
+        alert('Speech recognition is not supported in your browser. Please use a modern browser like Chrome, Edge, or Safari.');
+        recordButton.disabled = true;
+    }
+
+    // Update UI elements
+    function updateUI(recording) {
+        if (recording) {
+            recordButton.style.display = 'none'; // Hide record button
+            stopButton.style.display = 'inline-block'; // Show stop button
         } else {
-            alert('Speech recognition is not supported in your browser. Please use a modern browser like Chrome, Edge, or Safari.');
-            recordButton.disabled = true;
+            recordButton.style.display = 'inline-block'; // Show record button
+            stopButton.style.display = 'none'; // Hide stop button
+        }
+        submitFeedback.disabled = recording;
+    }
+
+    // Stop recording
+    function stopRecording() {
+        isRecording = false;
+
+        if (recognition) {
+            recognition.stop();
         }
 
-        // Update UI elements
-        function updateUI(recording) {
-            if (recording) {
-                recordButton.style.display = 'none'; // Hide record button
-                stopButton.style.display = 'inline-block'; // Show stop button
-            } else {
-                recordButton.style.display = 'inline-block'; // Show record button
-                stopButton.style.display = 'none'; // Hide stop button
-            }
-            submitFeedback.disabled = recording;
+        // Stop the media stream to release the microphone
+        if (mediaStream) {
+            const tracks = mediaStream.getTracks();
+            tracks.forEach(track => track.stop());  // Stop all tracks (audio in this case)
+            mediaStream = null;
         }
 
-        // Stop recording
-        function stopRecording() {
-            isRecording = false;
-            
+        updateUI(false); // Switch back to showing record button
+    }
+
+    // Start Recording button click handler
+    recordButton.addEventListener('click', async () => {
+        try {
+            // Reset the text area
+            transcriptionText.value = '';
+            isRecording = true;
+
+            // Request microphone permission
+            mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            // Start speech recognition
             if (recognition) {
-                recognition.stop();
+                recognition.start();
             }
 
-            // Stop the media stream to release the microphone
-            if (mediaStream) {
-                const tracks = mediaStream.getTracks();
-                tracks.forEach(track => track.stop());  // Stop all tracks (audio in this case)
-                mediaStream = null;
-            }
+        } catch (err) {
+            console.error('Error starting recording:', err);
+            alert('Error accessing microphone. Please ensure microphone permissions are granted.');
+            stopRecording();
+        }
+    });
 
-            updateUI(false); // Switch back to showing record button
+    // Stop Recording button click handler
+    stopButton.addEventListener('click', stopRecording);
+
+    // Generalized function to handle feedback submission
+    // Generalized function to handle feedback submission
+    async function submitFeedbackHandler(text, textareaElement) {
+        if (!text.trim()) {
+            alert('Please provide some feedback text');
+            return;
         }
 
-        // Start Recording button click handler
-        recordButton.addEventListener('click', async () => {
-            try {
-                // Reset the text area
-                transcriptionText.value = '';
-                isRecording = true;
+        loader.style.display = 'block';  // Show loader
+        feedbackMessage.textContent = '';  // Clear any previous message
 
-                // Request microphone permission
-                mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        try {
+            const response = await fetch('/process_feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
 
-                // Start speech recognition
-                if (recognition) {
-                    recognition.start();
-                }
+            const result = await response.json();
+            loader.style.display = 'none';
 
-            } catch (err) {
-                console.error('Error starting recording:', err);
-                alert('Error accessing microphone. Please ensure microphone permissions are granted.');
-                stopRecording();
-            }
-        });
-
-        // Stop Recording button click handler
-        stopButton.addEventListener('click', stopRecording);
-
-        // Submit Feedback button click handler for the recording screen
-        submitFeedback.addEventListener('click', async () => {
-            const text = transcriptionText.value.trim();
-            if (!text) {
-                alert('Please provide some feedback text');
-                return;
+            if (response.ok) {
+                feedbackMessage.classList.remove("feedback-failure-text");
+                feedbackMessage.classList.add("feedback-success-text");
+                feedbackMessage.textContent = 'Feedback processed successfully!';
+                textareaElement.value = '';  // Clear textarea
+            } else {
+                feedbackMessage.classList.remove("feedback-success-text");
+                feedbackMessage.classList.add("feedback-failure-text");
+                feedbackMessage.textContent = 'Error processing feedback: ' + (result.error || 'Unknown error');
             }
 
-            try {
-                const response = await fetch('/process_feedback', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ text: text })
-                });
+            // Remove feedback message after 5 seconds
+            setTimeout(() => {
+                feedbackMessage.textContent = '';
+                feedbackMessage.classList.remove("feedback-success-text", "feedback-failure-text");
+            }, 5000);
+        } catch (err) {
+            loader.style.display = 'none';
+            console.error('Error submitting feedback:', err);
+            feedbackMessage.classList.remove("feedback-success-text");
+            feedbackMessage.classList.add("feedback-failure-text");
+            feedbackMessage.textContent = 'Error submitting feedback. Please try again.';
 
-                const result = await response.json();
-                if (response.ok) {
-                    alert('Feedback processed successfully!');
-                    transcriptionText.value = '';
-                    submitFeedback.disabled = true;
-                } else {
-                    alert('Error processing feedback: ' + (result.error || 'Unknown error'));
-                }
-            } catch (err) {
-                console.error('Error submitting feedback:', err);
-                alert('Error submitting feedback. Please try again.');
-            }
-        });
+            // Remove feedback message after 5 seconds
+            setTimeout(() => {
+                feedbackMessage.textContent = '';
+                feedbackMessage.classList.remove("feedback-success-text", "feedback-failure-text");
+            }, 5000);
+        }
+    }
 
-        // Submit Feedback button click handler for the type screen
-        const submitTypeFeedback = document.getElementById('submitTypeFeedback');
-        submitTypeFeedback.addEventListener('click', async () => {
-            const text = document.getElementById('transcriptionTypeText').value.trim();
-            if (!text) {
-                alert('Please provide some feedback text');
-                return;
-            }
 
-            try {
-                const response = await fetch('/process_feedback', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ text: text })
-                });
+    // Submit Feedback button click handler for the recording screen
+    const submitRecordFeedback = document.getElementById('submitRecordFeedback');
+    submitRecordFeedback.addEventListener('click', () => {
+        const transcriptionText = document.getElementById('transcriptionRecordText').value;
+        submitFeedbackHandler(transcriptionText, document.getElementById('transcriptionRecordText'));
+    });
 
-                const result = await response.json();
-                if (response.ok) {
-                    alert('Feedback processed successfully!');
-                    document.getElementById('transcriptionTypeText').value = '';
-                } else {
-                    alert('Error processing feedback: ' + (result.error || 'Unknown error'));
-                }
-            } catch (err) {
-                console.error('Error submitting feedback:', err);
-                alert('Error submitting feedback. Please try again.');
-            }
-        });
-    </script>
+    // Submit Feedback button click handler for the type screen
+    const submitTypeFeedback = document.getElementById('submitTypeFeedback');
+    submitTypeFeedback.addEventListener('click', () => {
+        const transcriptionText = document.getElementById('transcriptionTypeText').value;
+        submitFeedbackHandler(transcriptionText, document.getElementById('transcriptionTypeText'));
+    });
+
+</script>
 
 {% endblock %}
