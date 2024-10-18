@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from dotenv import load_dotenv
 import os
 from ml import ml_logic
@@ -21,7 +21,7 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 
 @app.route('/')
 def home():
-    return {"message": "Welcome to the Feedback Processing API!"}, 200
+    return render_template('home.html')
 
 # ML-related routes (calling ml_logic functions)
 @app.route('/transcribe', methods=['POST'])
