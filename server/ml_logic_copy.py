@@ -1,8 +1,8 @@
 from flask import request, jsonify
-from summarization import summarize_text
-from sentiment_analysis import analyze_sentiment
-from categorization import categorize_text
-from keyword_extraction import extract_keywords
+from server.ml_modules.summarization import summarize_text
+from server.ml_modules.sentiment_analysis import analyze_sentiment
+from server.ml_modules.categorization import categorize_text
+from server.ml_modules.keyword_extraction import extract_keywords
 
 def process_feedback():
     data = request.json
