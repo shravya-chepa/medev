@@ -9,12 +9,19 @@ import torch
 import base64
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from dotenv import load_dotenv
+
+load_dotenv()
+
 nltk.data.path.append('/Users/saitejasriyerramsetti/nltk_data')
 nltk.download('all')
 app = Flask(__name__)
 
+# access environment variables
+google_api_credentials = os.getenv('GOOGLEAPI_CREDENTIALS_PATH')
+
 # Set up Google Cloud credentials
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'secret_key.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = google_api_credentials
 
 # Initialize Google Cloud Speech client
 speech_client = speech.SpeechClient()

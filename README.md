@@ -8,8 +8,8 @@ This API processes audio feedback and provides text analysis, including transcri
 ## Prerequisites
 Before running this application, ensure you have the following installed:
 
-- Python 3.7 or higher
-- pip (Python package installer)
+- Latest Python version
+- Latest pip (Python package installer)
 - Google Cloud account (with a Speech-to-Text API key)
 
 ## Getting Started
@@ -17,8 +17,8 @@ Before running this application, ensure you have the following installed:
 ### 1. Clone the Repository
 Clone this repository to your local machine using:
 ```bash
-git clone https://github.com/yourusername/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/shravya-chepa/medev.git
+cd medev
 ```
 
 ### 2. Set Up a Virtual Environment
@@ -51,14 +51,20 @@ For Windows, use:
 set GOOGLE_APPLICATION_CREDENTIALS=secret_key.json
 ```
 
-### 5. Run the Application
+### 5. Set up environment variable for file path of google credentials
+Create a .env file in the root folder and set its content as
+```
+GOOGLEAPI_CREDENTIALS_PATH=YOUR-PATH-HERE
+```
+
+### 6. Run the Application
 Start the Flask application:
 ```bash
 python app.py
 ```
 The API will be accessible at `http://127.0.0.1:5000/`.
 
-### 6. API Endpoints
+### 7. API Endpoints
 - **Home**: 
   - `GET /` - Returns a welcome message.
   
@@ -67,17 +73,14 @@ The API will be accessible at `http://127.0.0.1:5000/`.
 
 - **Process Feedback**:
   - `POST /process_feedback` - Expects a JSON body with a text field. Returns the summarized text, sentiment analysis, category, and keywords.
+  In Postman, start a new POST request- http://127.0.0.1:5000/process_feedback
+  In Body, select raw and give json of the form
+  ```
+  {
+    "text": "Your feedback here"
+  }
+  ```
 
 
-### 7. Stop the Application
+### 8. Stop the Application
 To stop the Flask server, you can press `Ctrl + C` in the terminal where the server is running.
-
-
-```
-
-### Instructions to Use
-- Replace `https://github.com/yourusername/your-repo-name.git` with the actual URL of your repository.
-- Adjust any specific instructions or details to better fit your project structure or additional features you may have.
-- Ensure that all your teammates are informed about the setup process so that they can get everything running smoothly.
-
-Let me know if you need any modifications or additional sections!
