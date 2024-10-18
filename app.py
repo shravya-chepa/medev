@@ -1,3 +1,4 @@
+# app.py
 from flask import Flask, render_template, jsonify
 from dotenv import load_dotenv
 import os
@@ -6,6 +7,7 @@ from blueprints.user import user_bp
 from blueprints.admin import admin_bp
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
+from server.models import create_feedback_model  # Import the feedback model
 
 # Load environment variables from .env
 load_dotenv()
@@ -43,9 +45,17 @@ def process_feedback():
 
     print("This is feedback JSON: ", feedback_json)
 
+    # Use the model to create the feedback document
+    feedback_document = create_feedback_model(
+        category=feedback_json.get("category", []),
+        keywords=feedback_json.get("keywords", []),
+        sentiment=feedback_json.get("sentiment", {}),
+        summary=feedback_json.get("summary", "")
+    )
+
     # Store the result in MongoDB
     try:
-        feedback_collection.insert_one(feedback_json)
+        feedback_collection.insert_one(feedback_document)
         print("Successfully inserted feedback into MongoDB")
     except ConnectionFailure as e:
         print(f"Connection Failure: {str(e)}")

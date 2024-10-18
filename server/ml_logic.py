@@ -1,6 +1,3 @@
-import sys
-sys.path.append('..')  # Adds the parent directory to the system path
-
 from flask import request, jsonify
 from server.summarization import summarize_text
 from server.sentiment_analysis import analyze_sentiment
