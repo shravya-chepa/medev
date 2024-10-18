@@ -1,3 +1,9 @@
+# to run this script - 
+# cd into medev
+# python -m server.scripts.upload_feedback_mongo
+
+
+
 import os
 import json  # Import JSON module to handle array data in data.txt
 from pymongo import MongoClient
