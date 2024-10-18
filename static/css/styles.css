@@ -31,9 +31,8 @@ nav a {
 
 }
 
-h2 {
-    color: pink;
-}
+
+/* home section */
 
 .home {
     display: flex;
@@ -71,6 +70,106 @@ h2 {
     }
 }
 
+/* user dashboard */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    20% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.recording-controls {
+    min-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: pulse 1s; 
+    animation-iteration-count: 1; 
+
+
+
+    button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+}
+
+.screens {
+    display: flex;
+    width: 100%;
+}
+
+.record-screen-content, .type-screen-content {
+    width: 100%;
+}
+
+.screens .screens-btns {
+    flex-grow: 1; 
+    padding: 12px;
+    font-size: 16px;
+    text-align: center;
+    border: none;
+    margin: -20px -20px 10px;
+    border: 1px solid #ccc;
+}
+
+.active-screen-btn {
+    background-color: #D8EFD3;
+}
+
+.transcription-container, .type-screen-content {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.record-screen-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.transcription-text {
+    width: 90%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 10px auto 15px;
+
+}
+
+.transcription-text:focus {
+    outline: 1px solid #ddd;
+    border: 1px solid #ddd;
+}
+
+.record-btn, .stop-btn {
+    background-color: #F1F8E8;
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+}
+
+.submit-feedback-btn {
+    background-color: #D8EFD3;
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+
+
 footer {
     display: flex;
     justify-content: center;
@@ -78,3 +177,11 @@ footer {
     margin-top: 40px;
     border-top: 1px solid #ccc;
 }
+
+/* media queries */
+
+@media only screen and (max-width: 600px) {
+    .recording-controls {
+        min-width: 300px;
+    }
+  }

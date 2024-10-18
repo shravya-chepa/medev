@@ -1,10 +1,8 @@
-from google.cloud import speech
 from transformers import pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-import base64
 import torch
 import nltk
 from flask import request, jsonify
@@ -18,8 +16,6 @@ device = 0 if torch.cuda.is_available() else -1
 summarizer = pipeline("summarization", device=device)
 sentiment_analyzer = pipeline("sentiment-analysis", device=device)
 
-# Google Cloud Speech client
-speech_client = speech.SpeechClient()
 
 # Classification model
 vectorizer = TfidfVectorizer()
@@ -36,30 +32,6 @@ train_labels = ['Billing', 'Insurance', 'Hospital Maintenance', 'Doctor Consulta
 X_train = vectorizer.fit_transform(train_texts)
 classifier.fit(X_train, train_labels)
 
-def transcribe_audio():
-    if 'audio' not in request.files:
-        return jsonify({'error': 'No audio file provided'}), 400
-    
-    audio_file = request.files['audio']
-    audio_content = audio_file.read()
-    
-    # Encode audio content
-    audio_content_base64 = base64.b64encode(audio_content).decode('utf-8')
-    audio = speech.RecognitionAudio(content=audio_content_base64)
-    
-    config = speech.RecognitionConfig(
-        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=16000,  # Set sample rate if known
-        language_code="en-US",
-    )
-
-    response = speech_client.recognize(config=config, audio=audio)
-    
-    transcript = ""
-    for result in response.results:
-        transcript += result.alternatives[0].transcript
-
-    return jsonify({'transcript': transcript})
 
 def process_feedback():
     data = request.json
