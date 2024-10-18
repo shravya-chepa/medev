@@ -4,6 +4,12 @@ from sklearn.naive_bayes import MultinomialNB
 # Load the actual review texts from text_test.txt
 import numpy as np
 import os
+from dotenv import load_dotenv
+
+
+# Load environment variables from .env
+load_dotenv()
+
 # Define possible categories
 categories = [
     'Emergency Room Care', 'Surgical Experience', 'Doctor Consultation', 'Nurse Communication', 
