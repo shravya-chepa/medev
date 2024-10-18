@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify
 from dotenv import load_dotenv
 import os
-from ml import ml_logic
+from server import ml_logic
 from blueprints.user import user_bp
 from blueprints.admin import admin_bp
 from pymongo import MongoClient

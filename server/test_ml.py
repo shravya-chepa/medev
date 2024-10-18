@@ -1,7 +1,7 @@
-from ml.summarization import summarize_text
-from ml.sentiment_analysis import analyze_sentiment
-from ml.categorization import categorize_text
-from ml.keyword_extraction import extract_keywords
+from server.summarization import summarize_text
+from server.sentiment_analysis import analyze_sentiment
+from server.categorization import categorize_text
+from server.keyword_extraction import extract_keywords
 import sys
 import os
 
@@ -9,7 +9,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Now import from the ml package
-from ml.summarization import summarize_text
+from server.summarization import summarize_text
 
 # Sample text to test the functionality
 sample_text = """

@@ -2,10 +2,10 @@ import sys
 sys.path.append('..')  # Adds the parent directory to the system path
 
 from flask import request, jsonify
-from ml.summarization import summarize_text
-from ml.sentiment_analysis import analyze_sentiment
-from ml.categorization import categorize_text
-from ml.keyword_extraction import extract_keywords
+from server.summarization import summarize_text
+from server.sentiment_analysis import analyze_sentiment
+from server.categorization import categorize_text
+from server.keyword_extraction import extract_keywords
 
 def process_feedback():
     data = request.json
