@@ -34,10 +34,10 @@ def admin_dashboard():
         # Convert to pandas DataFrame
         df = pd.DataFrame(feedback_data)
         
-        # Pre-process data
-        df['sentiment_label'] = df['sentiment'].apply(lambda x: x['label'])
-        df['sentiment_score'] = df['sentiment'].apply(lambda x: x['score'])
-        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        # Pre-process data safely using .get() for sentiment fields
+        df['sentiment_label'] = df['sentiment'].apply(lambda x: x.get('label', 'UNKNOWN'))
+        df['sentiment_score'] = df['sentiment'].apply(lambda x: x.get('score', 0))  # Default score to 0 if missing
+        df['timestamp'] = pd.to_datetime(df['timestamp'], errors='coerce')  # Handle possible invalid timestamps
         
         charts = {}
         
