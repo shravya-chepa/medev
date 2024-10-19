@@ -7,28 +7,32 @@ from blueprints.user import user_bp
 from blueprints.admin import admin_bp
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
-from server.models import create_feedback_model  # Import the feedback model
+from server.models import create_feedback_model
+from flask_cors import CORS
 
-# Load environment variables from .env
+import logging
+
+
+
+# Load environment variables
 load_dotenv()
 
-# Set up Flask app
+# Initialize Flask app
 app = Flask(__name__)
+CORS(app)
 
-# Get the MongoDB URI from environment variables (use the standard connection string)
-mongo_uri = os.getenv('MONGO_URI')
+app.logger.setLevel(logging.DEBUG)
 
-# Connect to MongoDB using the standard connection string with SSL verification disabled
+# MongoDB Connection
 try:
-    client = MongoClient(mongo_uri, tlsAllowInvalidCertificates=True)  # Disable SSL verification
+    client = MongoClient(os.getenv('MONGO_URI'), tlsAllowInvalidCertificates=True)
+    db = client['patient_feedback_db']
+    # Store MongoDB connection in app config
+    app.config['MONGO_DB'] = db
     print("Successfully connected to MongoDB")
 except ConnectionFailure as e:
     print(f"Could not connect to MongoDB: {e}")
-    exit(1)  # Exit if MongoDB connection fails
-
-# Set up the database and collection
-db = client['patient_feedback_db']
-feedback_collection = db['feedback']
+    exit(1)
 
 # Register blueprints
 app.register_blueprint(user_bp, url_prefix='/user')
@@ -65,6 +69,27 @@ def process_feedback():
         return jsonify({'error': 'An error occurred', 'details': str(e)}), 500
 
     return feedback_result
+
+@app.route('/feedbacks', methods=['GET'])
+def get_feedbacks():
+    try:
+        # Fetch all feedback records from MongoDB
+        feedback_records = list(feedback_collection.find({}))
+
+        # Convert MongoDB documents to JSON serializable format
+        feedbacks = []
+        for record in feedback_records:
+            record['_id'] = str(record['_id'])  # Convert ObjectId to string for JSON compatibility
+            feedbacks.append(record)
+
+        return jsonify(feedbacks), 200
+    except ConnectionFailure as e:
+        print(f"Connection Failure: {str(e)}")
+        return jsonify({'error': 'Database connection failed', 'details': str(e)}), 500
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return jsonify({'error': 'An error occurred', 'details': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
