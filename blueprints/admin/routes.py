@@ -41,19 +41,19 @@ def admin_dashboard():
         
         charts = {}
         
-        # 1. Sentiment Pie Chart
-        fig, ax = plt.subplots(figsize=(8, 6))
-        sentiment_counts = df['sentiment_label'].value_counts()
+        # Define a common figure size for consistency
+        fig_size = (8, 4)
 
-        # Use Seaborn's pastel color palette
+        # 1. Sentiment Pie Chart
+        fig, ax = plt.subplots(figsize=fig_size)
+        sentiment_counts = df['sentiment_label'].value_counts()
         ax.pie(sentiment_counts, labels=sentiment_counts.index, autopct='%1.1f%%', 
-        startangle=90, colors=sns.color_palette('pastel'))
+               startangle=90, colors=sns.color_palette('pastel'))
         ax.set_title('Sentiment Distribution')
         charts['sentiment_pie'] = convert_fig_to_base64(fig)
 
-        
         # 2. Sentiment Score Distribution
-        fig, ax = plt.subplots(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=fig_size)
         sns.histplot(data=df, x='sentiment_score', bins=20, kde=True)
         ax.set_title('Distribution of Sentiment Scores')
         ax.set_xlabel('Sentiment Score')
@@ -61,72 +61,74 @@ def admin_dashboard():
         charts['sentiment_histogram'] = convert_fig_to_base64(fig)
         
         # 3. Most Frequent Keywords
-
         all_keywords = [kw for keywords in df['keywords'] for kw in keywords]
         keyword_counts = Counter(all_keywords)
         keyword_df = pd.DataFrame(keyword_counts.items(), 
                                 columns=['keyword', 'count']).nlargest(10, 'count')
 
         # Create the bar plot with a different color palette and horizontal orientation
-        fig, ax = plt.subplots(figsize=(12, 6))
+        fig, ax = plt.subplots(figsize=fig_size)
         sns.barplot(data=keyword_df, y='keyword', x='count', palette="pastel")  # Horizontal orientation and pastel palette
         ax.set_title('Top 10 Most Frequent Keywords')
-        ax.set_ylabel('Keyword')  # Adjust the label for the y-axis
-        ax.set_xlabel('Count')  # Adjust the label for the x-axis
+        ax.set_ylabel('Keyword')
+        ax.set_xlabel('Count')
         plt.tight_layout()
-
-        # Convert figure to base64
         charts['keyword_bar'] = convert_fig_to_base64(fig)
 
-        
         # 4. Category Distribution
-        fig, ax = plt.subplots(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=fig_size)
         category_exploded = df.explode('category')
         sns.countplot(data=category_exploded, x='category', order=category_exploded['category'].value_counts().index, palette="pastel")
         ax.set_title('Feedback Distribution by Category')
         ax.set_xlabel('Count')
         plt.tight_layout()
         charts['category_bar'] = convert_fig_to_base64(fig)
-        
-        # 5. Positive vs Negative Review Count Over Time
-        fig, ax = plt.subplots(figsize=(12, 6))
 
-        # Filter for positive and negative sentiment labels
-        df_filtered = df[df['sentiment_label'].isin(['POSITIVE', 'NEGATIVE'])]
-
-        # Group by date and sentiment label, then count the occurrences
-        df_sentiment_count = df_filtered.groupby([df_filtered['timestamp'].dt.date, 'sentiment_label']).size().unstack(fill_value=0)
-
-        # Plot the counts of positive and negative reviews over time
-        df_sentiment_count.plot(marker='o', ax=ax)
-
-        ax.set_title('Positive vs Negative Review Counts Over Time')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Review Count')
-        plt.legend(title='Sentiment')
+        # 5. Sentiment Over Time with Specific Column
+        fig, ax = plt.subplots(figsize=fig_size)
+        sns.lineplot(x='timestamp', y='sentiment_score', data=df, marker='o', color='b')
+        plt.title('Sentiment Score Over Time')
+        plt.xlabel('Date')
+        plt.ylabel('Sentiment Score')
+        plt.xticks(rotation=45)
+        plt.grid(True)
         plt.tight_layout()
-        charts['sentiment_count_over_time'] = convert_fig_to_base64(fig)
-
-
+        charts['sentiment_score_over_time'] = convert_fig_to_base64(fig)
         
-        # 6. Word Cloud
-        custom_stopwords = set(['Kevin', 'kevin', 'Hannah', 'hannah', 'Kevin Hannah'])
+        # 6. Average Sentiment Score Over Time
+        fig, ax = plt.subplots(figsize=fig_size)
+        df_average_sentiment = df.groupby(df['timestamp'].dt.date)['sentiment_score'].mean().reset_index()
+        sns.lineplot(x='timestamp', y='sentiment_score', data=df_average_sentiment, marker='o', ax=ax)
+        ax.set_title('Average Sentiment Score Over Time')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Average Sentiment Score')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        charts['average_sentiment_over_time'] = convert_fig_to_base64(fig)
+
+        # 7. Word Cloud
+        custom_stopwords = set(['Kevin', 'kevin', 'Hannah', 'hannah', 'Kevin Hannah', 'Sharp', 'sharp', 'SHARP'])
         stopwords = STOPWORDS.union(custom_stopwords)
-        wordcloud = WordCloud(width=800, height=400, 
-                            background_color='white',
-                            colormap='viridis',
-                            max_words=100,
-                            stopwords=stopwords).generate(' '.join(all_keywords))
-        
-        fig, ax = plt.subplots(figsize=(10, 6))
-        ax.imshow(wordcloud, interpolation='bilinear')
-        ax.axis('off')
-        ax.set_title('Keyword Word Cloud')
-        charts['wordcloud'] = convert_fig_to_base64(fig)
+        if all_keywords:
+            wordcloud = WordCloud(width=800, height=400, background_color='white', colormap='viridis', max_words=100, stopwords=stopwords).generate(' '.join(all_keywords))
+            fig, ax = plt.subplots(figsize=fig_size)
+            ax.imshow(wordcloud, interpolation='bilinear')
+            ax.axis('off')
+            ax.set_title('Keyword Word Cloud')
+            charts['wordcloud'] = convert_fig_to_base64(fig)
+        else:
+            charts['wordcloud'] = None
+
+        # 8. Keyword Frequency Heatmap
+        keyword_category_matrix = df.explode('category').explode('keywords')
+        keyword_category_counts = keyword_category_matrix.groupby(['category', 'keywords']).size().unstack(fill_value=0)
+        fig, ax = plt.subplots(figsize=fig_size)
+        sns.heatmap(keyword_category_counts, cmap='Blues', ax=ax)
+        ax.set_title('Keyword Frequency by Category')
+        plt.tight_layout()
+        charts['keyword_heatmap'] = convert_fig_to_base64(fig)
 
         return render_template('admin_dashboard.html', charts=charts)
         
     except Exception as e:
         return f"Error generating dashboard: {str(e)}"
-
-

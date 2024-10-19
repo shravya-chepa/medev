@@ -2,8 +2,13 @@ body {
     background-color: #FFFFFF;
     padding: 0;
     margin: 0;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+
 }
 
+h1, h2, h3, p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+}
 
 main {
     display: flex;
@@ -71,10 +76,14 @@ hr {
 
     a {
         text-decoration: none;
-        border: 1px solid black;
-        padding: 10px 8px;
-        background-color: #F1F8E8;
         color: black;
+        background-color: #F1F8E8;
+        width: 100%;
+        padding: 15px;
+        font-size: 18px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        text-align: center;
     }
 }
 
