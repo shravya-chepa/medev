@@ -7,7 +7,7 @@ import seaborn as sns
 from io import BytesIO
 import base64
 from collections import Counter
-from wordcloud import WordCloud
+from wordcloud import WordCloud, STOPWORDS
 
 admin_bp = Blueprint('admin_bp', __name__)
 
@@ -88,30 +88,45 @@ def admin_dashboard():
         plt.tight_layout()
         charts['category_bar'] = convert_fig_to_base64(fig)
         
-        # 5. Sentiment Over Time
+        # 5. Positive vs Negative Review Count Over Time
         fig, ax = plt.subplots(figsize=(12, 6))
-        df_daily = df.groupby([df['timestamp'].dt.date, 'sentiment_label'])['sentiment_score'].mean().unstack()
-        df_daily.plot(marker='o', ax=ax)
-        ax.set_title('Average Sentiment Score Over Time')
+
+        # Filter for positive and negative sentiment labels
+        df_filtered = df[df['sentiment_label'].isin(['POSITIVE', 'NEGATIVE'])]
+
+        # Group by date and sentiment label, then count the occurrences
+        df_sentiment_count = df_filtered.groupby([df_filtered['timestamp'].dt.date, 'sentiment_label']).size().unstack(fill_value=0)
+
+        # Plot the counts of positive and negative reviews over time
+        df_sentiment_count.plot(marker='o', ax=ax)
+
+        ax.set_title('Positive vs Negative Review Counts Over Time')
         ax.set_xlabel('Date')
-        ax.set_ylabel('Average Sentiment Score')
+        ax.set_ylabel('Review Count')
         plt.legend(title='Sentiment')
         plt.tight_layout()
-        charts['sentiment_over_time'] = convert_fig_to_base64(fig)
+        charts['sentiment_count_over_time'] = convert_fig_to_base64(fig)
+
+
         
         # 6. Word Cloud
+        custom_stopwords = set(['Kevin', 'kevin', 'Hannah', 'hannah', 'Kevin Hannah'])
+        stopwords = STOPWORDS.union(custom_stopwords)
         wordcloud = WordCloud(width=800, height=400, 
                             background_color='white',
                             colormap='viridis',
-                            max_words=100).generate(' '.join(all_keywords))
+                            max_words=100,
+                            stopwords=stopwords).generate(' '.join(all_keywords))
         
         fig, ax = plt.subplots(figsize=(10, 6))
         ax.imshow(wordcloud, interpolation='bilinear')
         ax.axis('off')
         ax.set_title('Keyword Word Cloud')
         charts['wordcloud'] = convert_fig_to_base64(fig)
-        
+
         return render_template('admin_dashboard.html', charts=charts)
         
     except Exception as e:
         return f"Error generating dashboard: {str(e)}"
+
+
