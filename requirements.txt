@@ -19,3 +19,4 @@ flask-cors
 praw
 setuptools
 wheel
+gunicorn
