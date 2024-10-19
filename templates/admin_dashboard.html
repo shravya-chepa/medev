@@ -4,5 +4,30 @@
 
 {% block content %}
     <h2>Admin Dashboard</h2>
-    <p>Welcome to the user dashboard!</p>
+
+    
+    <!-- Sentiment Distribution Pie Chart -->
+    <img src="data:image/png;base64,{{ charts['sentiment_pie'] }}" alt="Sentiment Pie Chart">
+    <hr>
+    
+
+    <!-- Sentiment Score Distribution Histogram -->
+    <!-- <img src="data:image/png;base64,{{ charts['sentiment_histogram'] }}" alt="Sentiment Score Histogram">
+    <hr> -->
+
+    <!-- Most Frequent Keywords Bar Chart -->
+    <img src="data:image/png;base64,{{ charts['keyword_bar'] }}" alt="Keywords Bar Chart">
+    <hr>
+
+    <!-- Category-wise Feedback Distribution Bar Chart -->
+    <img src="data:image/png;base64,{{ charts['category_bar'] }}" alt="Category Bar Chart">
+    <hr>
+
+    <!-- Sentiment Over Time Line Chart -->
+    <img src="data:image/png;base64,{{ charts['sentiment_over_time'] }}" alt="Sentiment Over Time Line Chart">
+    <hr>
+
+    <!-- Word Cloud for Most Frequent Keywords -->
+    <img src="data:image/png;base64,{{ charts['wordcloud'] }}" alt="Word Cloud">
+    <hr>
 {% endblock %}

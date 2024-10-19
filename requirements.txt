@@ -10,3 +10,9 @@ tqdm==4.66.5
 joblib==1.4.2
 huggingface-hub==0.26.0
 pymongo==4.5.0
+pandas
+matplotlib
+seaborn
+plotly
+wordcloud
+flask-cors

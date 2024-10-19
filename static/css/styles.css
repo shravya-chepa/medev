@@ -32,6 +32,13 @@ nav a {
 
 }
 
+hr {
+    border: 1px solid #ccc; /* Light gray border */
+    margin: 20px 0; /* Adds space before and after the line */
+    width: 95%;
+}
+
+
 
 /* home section */
 
@@ -178,6 +185,15 @@ nav a {
     color: #D04848;
 }
 
+/* admin */
+.admin-dashboard {
+    img {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+    
+}
 
 footer {
     display: flex;
