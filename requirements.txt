@@ -16,3 +16,4 @@ seaborn
 plotly
 wordcloud
 flask-cors
+praw
