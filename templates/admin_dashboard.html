@@ -5,27 +5,29 @@
 {% block content %}
     <h2>Admin Dashboard</h2>
 
+    
     <!-- Sentiment Distribution Pie Chart -->
-    <h3>Sentiment Distribution</h3>
     <img src="data:image/png;base64,{{ charts['sentiment_pie'] }}" alt="Sentiment Pie Chart">
+    <hr>
+    
 
     <!-- Sentiment Score Distribution Histogram -->
-    <h3>Sentiment Score Distribution</h3>
-    <img src="data:image/png;base64,{{ charts['sentiment_histogram'] }}" alt="Sentiment Score Histogram">
+    <!-- <img src="data:image/png;base64,{{ charts['sentiment_histogram'] }}" alt="Sentiment Score Histogram">
+    <hr> -->
 
     <!-- Most Frequent Keywords Bar Chart -->
-    <h3>Most Frequent Keywords</h3>
     <img src="data:image/png;base64,{{ charts['keyword_bar'] }}" alt="Keywords Bar Chart">
+    <hr>
 
     <!-- Category-wise Feedback Distribution Bar Chart -->
-    <h3>Feedback Count by Category</h3>
     <img src="data:image/png;base64,{{ charts['category_bar'] }}" alt="Category Bar Chart">
+    <hr>
 
     <!-- Sentiment Over Time Line Chart -->
-    <h3>Sentiment Over Time</h3>
     <img src="data:image/png;base64,{{ charts['sentiment_over_time'] }}" alt="Sentiment Over Time Line Chart">
+    <hr>
 
     <!-- Word Cloud for Most Frequent Keywords -->
-    <h3>Word Cloud</h3>
     <img src="data:image/png;base64,{{ charts['wordcloud'] }}" alt="Word Cloud">
+    <hr>
 {% endblock %}

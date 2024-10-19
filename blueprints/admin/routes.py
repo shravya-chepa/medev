@@ -44,10 +44,13 @@ def admin_dashboard():
         # 1. Sentiment Pie Chart
         fig, ax = plt.subplots(figsize=(8, 6))
         sentiment_counts = df['sentiment_label'].value_counts()
+
+        # Use Seaborn's pastel color palette
         ax.pie(sentiment_counts, labels=sentiment_counts.index, autopct='%1.1f%%', 
-               startangle=90, colors=sns.color_palette('husl'))
+        startangle=90, colors=sns.color_palette('pastel'))
         ax.set_title('Sentiment Distribution')
         charts['sentiment_pie'] = convert_fig_to_base64(fig)
+
         
         # 2. Sentiment Score Distribution
         fig, ax = plt.subplots(figsize=(10, 6))
@@ -58,22 +61,28 @@ def admin_dashboard():
         charts['sentiment_histogram'] = convert_fig_to_base64(fig)
         
         # 3. Most Frequent Keywords
+
         all_keywords = [kw for keywords in df['keywords'] for kw in keywords]
         keyword_counts = Counter(all_keywords)
         keyword_df = pd.DataFrame(keyword_counts.items(), 
                                 columns=['keyword', 'count']).nlargest(10, 'count')
-        
+
+        # Create the bar plot with a different color palette and horizontal orientation
         fig, ax = plt.subplots(figsize=(12, 6))
-        sns.barplot(data=keyword_df, x='count', y='keyword')
+        sns.barplot(data=keyword_df, y='keyword', x='count', palette="pastel")  # Horizontal orientation and pastel palette
         ax.set_title('Top 10 Most Frequent Keywords')
-        ax.set_xlabel('Count')
+        ax.set_ylabel('Keyword')  # Adjust the label for the y-axis
+        ax.set_xlabel('Count')  # Adjust the label for the x-axis
         plt.tight_layout()
+
+        # Convert figure to base64
         charts['keyword_bar'] = convert_fig_to_base64(fig)
+
         
         # 4. Category Distribution
         fig, ax = plt.subplots(figsize=(10, 6))
         category_exploded = df.explode('category')
-        sns.countplot(data=category_exploded, y='category', order=category_exploded['category'].value_counts().index)
+        sns.countplot(data=category_exploded, x='category', order=category_exploded['category'].value_counts().index, palette="pastel")
         ax.set_title('Feedback Distribution by Category')
         ax.set_xlabel('Count')
         plt.tight_layout()
