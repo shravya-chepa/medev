@@ -17,3 +17,4 @@ plotly
 wordcloud
 flask-cors
 praw
+setuptools
