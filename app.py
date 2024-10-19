@@ -1,5 +1,4 @@
-# app.py
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, current_app
 from dotenv import load_dotenv
 import os
 from server import ml_logic
@@ -11,8 +10,6 @@ from server.models import create_feedback_model
 from flask_cors import CORS
 
 import logging
-
-
 
 # Load environment variables
 load_dotenv()
@@ -27,8 +24,10 @@ app.logger.setLevel(logging.DEBUG)
 try:
     client = MongoClient(os.getenv('MONGO_URI'), tlsAllowInvalidCertificates=True)
     db = client['patient_feedback_db']
-    # Store MongoDB connection in app config
+    feedback_collection = db['feedback']  # Set up the collection
+    # Store MongoDB connection and collection in app config
     app.config['MONGO_DB'] = db
+    app.config['FEEDBACK_COLLECTION'] = feedback_collection
     print("Successfully connected to MongoDB")
 except ConnectionFailure as e:
     print(f"Could not connect to MongoDB: {e}")
@@ -57,6 +56,9 @@ def process_feedback():
         summary=feedback_json.get("summary", "")
     )
 
+    # Get the feedback collection from the app config
+    feedback_collection = current_app.config['FEEDBACK_COLLECTION']
+
     # Store the result in MongoDB
     try:
         feedback_collection.insert_one(feedback_document)
@@ -72,6 +74,9 @@ def process_feedback():
 
 @app.route('/feedbacks', methods=['GET'])
 def get_feedbacks():
+    # Get the feedback collection from the app config
+    feedback_collection = current_app.config['FEEDBACK_COLLECTION']
+
     try:
         # Fetch all feedback records from MongoDB
         feedback_records = list(feedback_collection.find({}))
