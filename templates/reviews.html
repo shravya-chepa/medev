@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sharp Hospital Reviews</title>
+</head>
+<body>
+    <h1>Sharp Hospital Reddit Reviews</h1>
+    <button onclick="fetchReviews()">Fetch Reviews</button>
+    <div id="reviews"></div>
+
+    <script>
+        async function fetchReviews() {
+            const response = await fetch('/fetch_reviews');
+            const reviews = await response.json();
+            let output = '<ul>';
+            reviews.forEach(review => {
+                output += `<li>
+                    <strong>Title:</strong> ${review.title} <br>
+                    <strong>URL:</strong> <a href="${review.url}">${review.url}</a> <br>
+                    <strong>Score:</strong> ${review.score} <br>
+                    <strong>Comments:</strong> ${review.comments}
+                </li>`;
+            });
+            output += '</ul>';
+            document.getElementById('reviews').innerHTML = output;
+        }
+    </script>
+</body>
+</html>
