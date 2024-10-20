@@ -204,6 +204,15 @@ hr {
     
 }
 
+.fetch-reddit-btn {
+    background-color: #D8EFD3;
+    /* width: 100%; */
+    padding: 15px;
+    font-size: 18px;
+    margin-top: 10px;
+    border: 1px solid #ddd
+}
+
 footer {
     display: flex;
     justify-content: center;

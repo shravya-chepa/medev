@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, current_app
+from flask import Flask, render_template, jsonify, current_app, request
 from dotenv import load_dotenv
 import os
 from server import ml_logic
@@ -107,6 +107,8 @@ def fetch_reviews():
                 }
                 # Append the processed comment to the list
                 processed_comments.append(comment_data)
+
+    print("processed comments: ", processed_comments)
     return jsonify(processed_comments)  # Return only processed comments as JSON
 # Route to save processed comments to MongoDB
 @app.route('/process_reviews', methods=['POST'])

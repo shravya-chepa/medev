@@ -37,7 +37,7 @@ def analyze_sentiment(text):
 
     except Exception as e:
         # Return neutral if there's an error in processing
-        return {"label": "neutral", "score (0-10 scale)": 5, "error": str(e)}
+        return {"label": "neutral", "score (0-10 scale)": 5}
 
 def map_score_to_scale(label, score):
     """

@@ -5,6 +5,8 @@
 {% block content %}
     <h1>Admin Dashboard</h1>
 
+    
+
     <!-- Sentiment Distribution Pie Chart -->
     <img src="data:image/png;base64,{{ charts['sentiment_pie'] }}" alt="Sentiment Pie Chart">
     <hr>
@@ -35,5 +37,52 @@
 
     <!-- Keyword Frequency Heatmap -->
     <img src="data:image/png;base64,{{ charts['keyword_heatmap'] }}" alt="Keyword Frequency Heatmap">
+
+
+
+    <h1>Sharp Hospital Reddit</h1>
+    <button onclick="fetchReviews()" class="fetch-reddit-btn">Fetch Reviews</button>
+    <div id="reviews"></div>
+
+    <!-- Loader -->
+    <div id="loader" style="display: none;">
+        <i class="fa fa-spinner fa-spin"></i> Processing feedback...
+    </div>
+
+    <script>
+        async function fetchReviews() {
+            // Show the loader when the button is clicked
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('reviews').innerHTML = ''; // Clear existing content
+
+            try {
+                // Fetch the reviews from the /fetch_reviews API
+                const response = await fetch('/fetch_reviews');
+                if (!response.ok) throw new Error('Failed to fetch reviews');
+                
+                const reviews = await response.json();
+
+                // Send the reviews to the /process_reviews API
+                const processResponse = await fetch('/process_reviews', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(reviews) // Send the reviews as JSON
+                });
+
+                if (!processResponse.ok) throw new Error('Failed to process reviews');
+
+                // Success message after uploading to MongoDB
+                document.getElementById('reviews').innerHTML = "Loaded and uploaded Reddit conversations to the database.";
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+                document.getElementById('reviews').innerHTML = 'Error fetching reviews. Please try again later.';
+            } finally {
+                // Hide the loader once fetching is done
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+    </script>
 
 {% endblock %}
